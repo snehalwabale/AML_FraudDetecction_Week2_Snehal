@@ -11,29 +11,7 @@ AI-powered AML investigation assistant built using:
 - Pydantic
 - Structured Logging
 
-## Features
 
-### Transaction Pattern Analyzer
-
-Detects:
-
-- Structuring
-- Layering
-- Rapid Movement
-- Round Tripping
-
-### SAR Generator
-
-Generates Suspicious Activity Reports.
-
-### Sanctions & PEP Screening
-
-Checks:
-
-- OFAC
-- UN
-- EU
-- PEP Databases
 
 ## API Endpoints
 
