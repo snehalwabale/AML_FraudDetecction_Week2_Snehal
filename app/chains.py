@@ -13,7 +13,7 @@ from app.models import (
 
 from app.tools import *
 
-# Optional LangSmith tracing
+
 try:
 
     from langsmith import traceable
@@ -26,9 +26,6 @@ except Exception:
 
 load_dotenv()
 
-# =====================================================
-# OPENAI MODEL
-# =====================================================
 
 llm = ChatOpenAI(
 
@@ -37,15 +34,10 @@ llm = ChatOpenAI(
     temperature=0.2
 )
 
-# =====================================================
-# TOOL ROUTER
-# =====================================================
 
 def run_tool(query):
 
     q = query.lower()
-
-    # -------------------------------------------------
 
     if "analyze" in q:
 
@@ -57,8 +49,6 @@ def run_tool(query):
 
             "Transaction Analyzer"
         )
-
-    # -------------------------------------------------
 
     elif "sar" in q:
 
@@ -74,8 +64,6 @@ def run_tool(query):
             "SAR Generator"
         )
 
-    # -------------------------------------------------
-
     elif "screen" in q:
 
         return (
@@ -86,8 +74,6 @@ def run_tool(query):
 
             "Sanctions Screener"
         )
-
-    # -------------------------------------------------
 
     elif "pep" in q:
 
@@ -100,8 +86,6 @@ def run_tool(query):
             "PEP Screener"
         )
 
-    # -------------------------------------------------
-
     elif "risk score" in q:
 
         return (
@@ -113,8 +97,6 @@ def run_tool(query):
             "Risk Score Tool"
         )
 
-    # -------------------------------------------------
-
     elif "velocity" in q:
 
         return (
@@ -123,8 +105,6 @@ def run_tool(query):
 
             "Velocity Analyzer"
         )
-
-    # -------------------------------------------------
 
     elif "counterpart" in q:
 
@@ -135,8 +115,6 @@ def run_tool(query):
             "Counterparty Tool"
         )
 
-    # -------------------------------------------------
-
     elif "previous alert" in q:
 
         return (
@@ -145,8 +123,6 @@ def run_tool(query):
 
             "Alert History Tool"
         )
-
-    # -------------------------------------------------
 
     elif "typology" in q:
 
@@ -157,8 +133,6 @@ def run_tool(query):
             "Typology Tool"
         )
 
-    # -------------------------------------------------
-
     elif "deadline" in q:
 
         return (
@@ -167,8 +141,6 @@ def run_tool(query):
 
             "Deadline Tool"
         )
-
-    # -------------------------------------------------
 
     elif "due diligence" in q:
 
@@ -179,8 +151,6 @@ def run_tool(query):
             "EDD Tool"
         )
 
-    # -------------------------------------------------
-
     elif "jurisdiction" in q:
 
         return (
@@ -189,8 +159,6 @@ def run_tool(query):
 
             "Jurisdiction Tool"
         )
-
-    # -------------------------------------------------
 
     elif "str field" in q:
 
@@ -201,8 +169,6 @@ def run_tool(query):
             "STR Tool"
         )
 
-    # -------------------------------------------------
-
     elif "beneficial owner" in q:
 
         return (
@@ -211,8 +177,6 @@ def run_tool(query):
 
             "UBO Tool"
         )
-
-    # -------------------------------------------------
 
     elif "open aml alerts" in q:
 
@@ -223,8 +187,6 @@ def run_tool(query):
             "Alert Summary Tool"
         )
 
-    # -------------------------------------------------
-
     elif "timeline" in q:
 
         return (
@@ -233,8 +195,6 @@ def run_tool(query):
 
             "Timeline Tool"
         )
-
-    # -------------------------------------------------
 
     elif "memo" in q:
 
@@ -245,8 +205,6 @@ def run_tool(query):
             "Escalation Memo Tool"
         )
 
-    # -------------------------------------------------
-
     return (
 
         None,
@@ -254,10 +212,6 @@ def run_tool(query):
         "No Tool"
     )
 
-
-# =====================================================
-# FALLBACK CHAIN
-# =====================================================
 
 def fallback_response():
 
@@ -273,10 +227,6 @@ def fallback_response():
         tool_used="Fallback"
     )
 
-
-# =====================================================
-# MAIN AML CHAIN
-# =====================================================
 
 @traceable
 def ask_llm(

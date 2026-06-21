@@ -1,10 +1,6 @@
 import pandas as pd
 
 
-# =====================================================
-# TRANSACTION ANALYZER
-# =====================================================
-
 def analyze_transactions(account_id):
 
     try:
@@ -54,10 +50,6 @@ def analyze_transactions(account_id):
     }
 
 
-# =====================================================
-# SAR GENERATOR
-# =====================================================
-
 def generate_sar(
     account_id,
     reason
@@ -85,10 +77,6 @@ File Immediately
 """
 
 
-# =====================================================
-# SANCTIONS SCREENING
-# =====================================================
-
 def screen_name(name):
 
     return {
@@ -110,10 +98,6 @@ def screen_name(name):
     }
 
 
-# =====================================================
-# AML RISK SCORE
-# =====================================================
-
 def get_risk_score(customer_id):
 
     return {
@@ -129,10 +113,6 @@ def get_risk_score(customer_id):
     }
 
 
-# =====================================================
-# TRANSACTION VELOCITY
-# =====================================================
-
 def transaction_velocity():
 
     return {
@@ -147,10 +127,6 @@ def transaction_velocity():
         "222%"
     }
 
-
-# =====================================================
-# COUNTERPARTIES
-# =====================================================
 
 def counterparties():
 
@@ -169,10 +145,6 @@ def counterparties():
     }
 
 
-# =====================================================
-# PREVIOUS ALERTS
-# =====================================================
-
 def previous_alerts():
 
     return {
@@ -181,10 +153,6 @@ def previous_alerts():
         4
     }
 
-
-# =====================================================
-# AML TYPOLOGY
-# =====================================================
 
 def typology():
 
@@ -195,10 +163,6 @@ def typology():
     }
 
 
-# =====================================================
-# FILING DEADLINE
-# =====================================================
-
 def filing_deadline():
 
     return {
@@ -207,10 +171,6 @@ def filing_deadline():
         "30 Days"
     }
 
-
-# =====================================================
-# EDD
-# =====================================================
 
 def enhanced_due_diligence():
 
@@ -227,10 +187,6 @@ def enhanced_due_diligence():
     }
 
 
-# =====================================================
-# HIGH RISK JURISDICTION
-# =====================================================
-
 def jurisdiction_check():
 
     return {
@@ -242,10 +198,6 @@ def jurisdiction_check():
         True
     }
 
-
-# =====================================================
-# RBI STR FIELDS
-# =====================================================
 
 def str_fields():
 
@@ -266,10 +218,6 @@ def str_fields():
     }
 
 
-# =====================================================
-# UBO
-# =====================================================
-
 def ultimate_beneficial_owner():
 
     return {
@@ -278,10 +226,6 @@ def ultimate_beneficial_owner():
         "John Holdings Ltd."
     }
 
-
-# =====================================================
-# ALERT SUMMARY
-# =====================================================
 
 def alert_summary():
 
@@ -300,10 +244,6 @@ def alert_summary():
         1
     }
 
-
-# =====================================================
-# INVESTIGATION TIMELINE
-# =====================================================
 
 def investigation_timeline():
 
@@ -326,10 +266,6 @@ def investigation_timeline():
     }
 
 
-# =====================================================
-# ESCALATION MEMO
-# =====================================================
-
 def escalation_memo():
 
     return {
@@ -337,6 +273,7 @@ def escalation_memo():
         "memo":
         "Escalate to Compliance Committee"
     }
+
 
 if __name__ == "__main__":
 

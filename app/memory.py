@@ -1,7 +1,3 @@
-# =====================================================
-# SIMPLE CONVERSATION MEMORY
-# =====================================================
-
 conversation_history = []
 
 
@@ -13,8 +9,6 @@ def add_message(role, content):
 
         "content": content
     })
-
-    # Keep only last 10 messages
 
     if len(conversation_history) > 10:
 

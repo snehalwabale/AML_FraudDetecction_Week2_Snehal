@@ -1,18 +1,10 @@
 from pydantic import BaseModel
 
 
-# =====================================================
-# REQUEST MODEL
-# =====================================================
-
 class ChatRequest(BaseModel):
 
     message: str
 
-
-# =====================================================
-# RESPONSE MODEL
-# =====================================================
 
 class AMLResponse(BaseModel):
 
@@ -24,10 +16,6 @@ class AMLResponse(BaseModel):
 
     tool_used: str = "None"
 
-
-# =====================================================
-# HEALTH MODEL
-# =====================================================
 
 class HealthResponse(BaseModel):
 
