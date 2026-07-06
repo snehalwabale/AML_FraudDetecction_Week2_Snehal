@@ -1,0 +1,53 @@
+AML & Fraud Detection Guidelines
+
+Anti-Money Laundering (AML) is a set of procedures, laws, and regulations designed to prevent criminals from disguising illegally obtained funds as legitimate income.
+
+Financial institutions must continuously monitor customer transactions and identify suspicious activities.
+
+Common money laundering typologies include:
+
+1. Structuring
+Structuring involves breaking a large amount of cash into several smaller deposits below the reporting threshold to avoid regulatory detection.
+
+2. Layering
+Layering refers to transferring money through multiple accounts, banks, or countries to hide its original source.
+
+3. Integration
+Integration occurs when illicit funds are reintroduced into the legitimate financial system through investments or business transactions.
+
+Indicators of suspicious transactions include:
+
+• Frequent cash deposits below reporting limits.
+• Rapid movement of funds between multiple accounts.
+• Round-trip transactions.
+• Transactions involving shell companies.
+• High-risk foreign jurisdictions.
+• Unusual transaction velocity.
+
+Sanctions Screening
+
+Banks must screen customers and beneficiaries against international sanctions lists including:
+
+- OFAC Sanctions List
+- United Nations Sanctions List
+- European Union Sanctions List
+
+Politically Exposed Persons (PEPs)
+
+PEPs are individuals who hold prominent public positions and therefore require Enhanced Due Diligence (EDD).
+
+Suspicious Activity Reports (SAR)
+
+When suspicious activity is detected, compliance officers prepare a Suspicious Activity Report containing:
+
+- Customer Information
+- Account Details
+- Transaction Summary
+- Investigation Notes
+- AML Typology
+- Risk Score
+- Recommended Actions
+
+Regulatory filing should generally occur within the prescribed reporting timeline after suspicious activity has been identified.
+
+Enhanced Due Diligence should be performed for high-risk customers and continuous monitoring should be maintained until the investigation is closed.
