@@ -9,9 +9,6 @@ python3 -m venv venv
 
 # macOS/Linux
 source venv/bin/activate
-
-# Windows (PowerShell)
-venv\Scripts\Activate.ps1
 ```
 
 ## 2. Install dependencies
@@ -71,7 +68,7 @@ http://localhost:8000/docs
 In a second terminal (with the venv activated):
 
 ```bash
-streamlit run frontend/streamlit.py
+streamlit run frontend/streamlit_app.py
 ```
 
 Open http://localhost:8501 and chat with the AML Investigation Co-Pilot. It communicates with the FastAPI backend running on `http://localhost:8000`.
