@@ -2,7 +2,6 @@ import os
 from typing import List
 
 from fastapi import UploadFile
-from langchain_core.tools import tool
 
 from rag.loaders import load_document
 from rag.chunkers import chunk_document
@@ -16,10 +15,7 @@ def ingest_documents(files: List[UploadFile], job_id: str):
 
     for file in files:
 
-        file_path = os.path.join(
-            "data",
-            file.filename
-        )
+        file_path = os.path.join("data", file.filename)
 
         with open(file_path, "wb") as f:
             f.write(file.file.read())
@@ -33,11 +29,8 @@ def ingest_documents(files: List[UploadFile], job_id: str):
         vector_store.add_documents(chunks)
 
     return {
-
         "job_id": job_id,
-
         "status": "completed"
-
     }
 
 
@@ -52,40 +45,20 @@ def get_sources():
         for _, doc in store.items():
 
             sources.append(
-
                 {
-
-                    "doc_id": doc.metadata.get(
-
-                        "doc_id",
-
-                        "Unknown"
-
-                    ),
-
-                    "source": doc.metadata.get(
-
-                        "source",
-
-                        "Unknown"
-
-                    )
-
+                    "doc_id": doc.metadata.get("doc_id", "Unknown"),
+                    "source": doc.metadata.get("source", "Unknown")
                 }
-
             )
 
         unique = []
-
         seen = set()
 
-        for s in sources:
+        for item in sources:
 
-            if s["doc_id"] not in seen:
-
-                seen.add(s["doc_id"])
-
-                unique.append(s)
+            if item["doc_id"] not in seen:
+                seen.add(item["doc_id"])
+                unique.append(item)
 
         return unique
 
@@ -97,11 +70,8 @@ def get_sources():
 def delete_source(doc_id):
 
     return {
-
         "status": "delete operation not supported by current FAISS implementation",
-
         "doc_id": doc_id
-
     }
 
 
@@ -116,17 +86,12 @@ def run_evaluation():
     except Exception as e:
 
         return {
-
             "status": "failed",
-
             "error": str(e)
-
         }
 
 
-@tool
-def analyze_transactions() -> str:
-    """Analyze suspicious transactions."""
+def analyze_transactions():
 
     return """
 Transactions Analysed
@@ -142,9 +107,7 @@ Review immediately.
 """
 
 
-@tool
-def screen_name(name: str) -> str:
-    """Check customer against sanctions and PEP lists."""
+def screen_name(name="Unknown"):
 
     return f"""
 Customer : {name}
@@ -158,9 +121,7 @@ Customer cleared.
 """
 
 
-@tool
-def get_risk_score(customer: str) -> str:
-    """Retrieve AML risk score."""
+def get_risk_score(customer="Unknown"):
 
     return f"""
 Customer : {customer}
@@ -171,9 +132,7 @@ Risk Level : High
 """
 
 
-@tool
-def transaction_velocity() -> str:
-    """Analyze transaction velocity."""
+def transaction_velocity():
 
     return """
 Average Daily Transactions : 12
@@ -186,9 +145,7 @@ Unusual Increase Detected
 """
 
 
-@tool
-def counterparties() -> str:
-    """Retrieve counterparties."""
+def counterparties():
 
     return """
 Counterparties
@@ -201,9 +158,7 @@ XYZ Holdings
 """
 
 
-@tool
-def previous_alerts() -> str:
-    """Retrieve previous AML alerts."""
+def previous_alerts():
 
     return """
 Previous Alerts : 5
@@ -214,37 +169,27 @@ Open : 1
 """
 
 
-@tool
-def typology() -> str:
-    """Return AML typology."""
+def typology():
 
     return "Structuring / Smurfing"
 
 
-@tool
-def filing_deadline() -> str:
-    """Return SAR filing deadline."""
+def filing_deadline():
 
     return "SAR Filing Deadline : 30 Days"
 
 
-@tool
-def enhanced_due_diligence() -> str:
-    """EDD recommendation."""
+def enhanced_due_diligence():
 
     return "Enhanced Due Diligence Recommended"
 
 
-@tool
-def jurisdiction_check() -> str:
-    """Jurisdiction risk."""
+def jurisdiction_check():
 
     return "Medium Risk Jurisdiction"
 
 
-@tool
-def str_fields() -> str:
-    """Mandatory STR/SAR fields."""
+def str_fields():
 
     return """
 Required Fields
@@ -259,16 +204,12 @@ Reason
 """
 
 
-@tool
-def ultimate_beneficial_owner() -> str:
-    """Return UBO."""
+def ultimate_beneficial_owner():
 
     return "Ultimate Beneficial Owner : John Smith"
 
 
-@tool
-def alert_summary() -> str:
-    """Current alert summary."""
+def alert_summary():
 
     return """
 Open Alerts : 7
@@ -281,9 +222,7 @@ Low : 2
 """
 
 
-@tool
-def investigation_timeline() -> str:
-    """Investigation timeline."""
+def investigation_timeline():
 
     return """
 Timeline
@@ -298,9 +237,7 @@ Alert Generated
 """
 
 
-@tool
-def escalation_memo() -> str:
-    """Generate escalation memo."""
+def escalation_memo():
 
     return """
 Escalation Memo
