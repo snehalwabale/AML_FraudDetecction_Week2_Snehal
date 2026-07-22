@@ -4,29 +4,17 @@ from langchain_openai import ChatOpenAI
 
 from app.models import AMLResponse
 from app.memory import get_history
-from app.prompts import prompt
 
-from app.tools import (
-    analyze_transactions,
-    screen_name,
-    get_risk_score,
-    transaction_velocity,
-    counterparties,
-    previous_alerts,
-    typology,
-    filing_deadline,
-    enhanced_due_diligence,
-    jurisdiction_check,
-    str_fields,
-    ultimate_beneficial_owner,
-    alert_summary,
-    investigation_timeline,
-    escalation_memo
-)
+from chains.router import get_chain
 
-from rag.qa_chain import generate_answer
+from prompt_manager.loader import load_prompt
+
+from hitl.triggers import should_trigger_hitl
+from hitl.manager import create_hitl_task
+
 
 load_dotenv()
+
 
 llm = ChatOpenAI(
     model="gpt-4o-mini",
@@ -34,9 +22,21 @@ llm = ChatOpenAI(
 )
 
 
+
 def route_query(query: str):
 
     q = query.lower()
+
+
+    if any(x in q for x in [
+        "investigate",
+        "investigation",
+        "customer analysis",
+        "full analysis",
+        "complete review"
+    ]):
+        return "investigation"
+
 
     if any(x in q for x in [
         "risk",
@@ -44,164 +44,388 @@ def route_query(query: str):
     ]):
         return "risk"
 
+
     if any(x in q for x in [
         "sanction",
-        "ofac",
         "pep",
+        "ofac",
         "screen"
     ]):
         return "screen"
 
-    if any(x in q for x in [
-        "transaction",
-        "transactions"
-    ]):
+
+    if "transaction" in q:
         return "transactions"
+
 
     if "velocity" in q:
         return "velocity"
 
+
     if "counterparty" in q:
         return "counterparty"
+
 
     if "previous alert" in q:
         return "alerts"
 
+
     if "typology" in q:
         return "typology"
+
 
     if "deadline" in q:
         return "deadline"
 
+
     if "edd" in q:
         return "edd"
+
 
     if "jurisdiction" in q:
         return "jurisdiction"
 
+
     if "str" in q:
         return "str"
+
 
     if "ubo" in q:
         return "ubo"
 
+
     if "summary" in q:
         return "summary"
+
 
     if "timeline" in q:
         return "timeline"
 
+
     if "memo" in q:
         return "memo"
+
 
     return "rag"
 
 
-def run_chat(query: str, session_id: str):
+
+
+
+def calculate_risk_score(intent, query):
+
+    score = 0
+
+    indicators = []
+
+
+    keywords = {
+
+        "fraud":15,
+        "money laundering":20,
+        "sanction":25,
+        "pep":20,
+        "terror":30,
+        "freeze":20,
+        "suspicious":15,
+        "str":25,
+        "sar":25
+
+    }
+
+
+    q = query.lower()
+
+
+    for word,value in keywords.items():
+
+        if word in q:
+
+            score += value
+
+            indicators.append(word)
+
+
+
+    if intent in [
+        "screen",
+        "str",
+        "typology",
+        "investigation"
+    ]:
+
+        score += 30
+
+
+
+    if intent in [
+        "risk",
+        "transactions",
+        "investigation"
+    ]:
+
+        score += 20
+
+
+
+    return min(score,100), indicators
+
+
+
+
+
+def get_risk_level(score):
+
+    if score >= 70:
+
+        return "HIGH"
+
+
+    if score >= 30:
+
+        return "MEDIUM"
+
+
+    return "LOW"
+
+
+
+
+
+
+def run_chat(
+    query:str,
+    session_id:str,
+    role:str="analyst"
+):
+
 
     history = get_history(session_id)
 
+
     intent = route_query(query)
 
-    citations = []
 
-    trace = []
+    risk_score, indicators = calculate_risk_score(
+        intent,
+        query
+    )
 
-    tool_used = "RAG"
 
-    if intent == "risk":
-        tool_output = str(get_risk_score())
-        tool_used = "Risk Tool"
+    risk_level = get_risk_level(
+        risk_score
+    )
 
-    elif intent == "screen":
-        tool_output = str(screen_name())
-        tool_used = "Sanction Tool"
 
-    elif intent == "transactions":
-        tool_output = str(analyze_transactions())
-        tool_used = "Transaction Tool"
+    try:
 
-    elif intent == "velocity":
-        tool_output = str(transaction_velocity())
-        tool_used = "Velocity Tool"
+        trigger, reason = should_trigger_hitl(query)
 
-    elif intent == "counterparty":
-        tool_output = str(counterparties())
-        tool_used = "Counterparty Tool"
 
-    elif intent == "alerts":
-        tool_output = str(previous_alerts())
-        tool_used = "Alerts Tool"
+        if trigger:
 
-    elif intent == "typology":
-        tool_output = str(typology())
-        tool_used = "Typology Tool"
 
-    elif intent == "deadline":
-        tool_output = str(filing_deadline())
-        tool_used = "Deadline Tool"
+            task = create_hitl_task(
 
-    elif intent == "edd":
-        tool_output = str(enhanced_due_diligence())
-        tool_used = "EDD Tool"
+                query=query,
 
-    elif intent == "jurisdiction":
-        tool_output = str(jurisdiction_check())
-        tool_used = "Jurisdiction Tool"
+                recommendation="Human Approval Required",
 
-    elif intent == "str":
-        tool_output = str(str_fields())
-        tool_used = "STR Tool"
+                reason=reason
 
-    elif intent == "ubo":
-        tool_output = str(ultimate_beneficial_owner())
-        tool_used = "UBO Tool"
+            )
 
-    elif intent == "summary":
-        tool_output = str(alert_summary())
-        tool_used = "Summary Tool"
 
-    elif intent == "timeline":
-        tool_output = str(investigation_timeline())
-        tool_used = "Timeline Tool"
+            return AMLResponse(
 
-    elif intent == "memo":
-        tool_output = escalation_memo()
-        tool_used = "Memo Tool"
+                response=(
 
-    else:
-        tool_output, citations, trace = generate_answer(
-            query,
-            session_id
-        )
+                    "Human approval required.\n\n"
 
-    chain = prompt | llm
+                    f"Task ID: {task['task_id']}"
 
-    response = chain.invoke(
+                ),
+
+                risk_score=risk_score,
+
+                risk_level=risk_level,
+
+                action="Pending Approval",
+
+                tool_used="HITL",
+
+                intent=intent,
+
+                recommendation="Manual compliance review",
+
+                decision="Pending",
+
+                evidence=[
+
+                    {
+                        "indicator":x
+                    }
+
+                    for x in indicators
+
+                ]
+
+            )
+
+
+    except Exception:
+
+        pass
+
+
+
+
+    chain = get_chain(intent)
+
+
+
+    result = chain.invoke(
 
         {
 
-            "history": history,
+            "question":query,
 
-            "examples": "",
+            "intent":intent,
 
-            "tool_output": tool_output,
-
-            "question": query
+            "role":role
 
         }
 
     )
 
+
+
+    tool_output = result.get(
+
+        "tool_output",
+
+        ""
+
+    )
+
+
+    citations = result.get(
+
+        "citations",
+
+        []
+
+    )
+
+
+    trace = result.get(
+
+        "trace",
+
+        []
+
+    )
+
+
+    evidence = result.get(
+
+        "evidence",
+
+        []
+
+    )
+
+
+
+    prompt_template = load_prompt(
+        "rag_qa"
+    )
+
+
+
+    final_chain = prompt_template | llm
+
+
+
+    response = final_chain.invoke(
+
+        {
+
+            "context":str(tool_output),
+
+            "question":query,
+
+            "role":role,
+
+            "chat_history":history,
+
+            "domain":"AML & Fraud Detection"
+
+        }
+
+    )
+
+
+
     return AMLResponse(
 
         response=response.content,
 
-        risk_score=0,
+        risk_score=risk_score,
 
-        action="Completed",
+        risk_level=risk_level,
 
-        tool_used=tool_used,
+        action=(
+
+            "Manual Investigation Required"
+
+            if risk_level=="HIGH"
+
+            else
+
+            "Continue Monitoring"
+
+        ),
+
+        tool_used=intent.upper(),
+
+        intent=intent,
+
+        recommendation=(
+
+            "Investigate customer activity"
+
+            if risk_score >= 40
+
+            else
+
+            "Normal monitoring"
+
+        ),
+
+        decision="Completed",
+
+        evidence=(
+
+            evidence
+
+            if evidence
+
+            else
+
+            [
+
+                {
+
+                    "risk_indicator":x
+
+                }
+
+                for x in indicators
+
+            ]
+
+        ),
 
         citations=citations,
 
@@ -210,8 +434,27 @@ def run_chat(query: str, session_id: str):
     )
 
 
-def run_retrieve(query, top_k=5):
+
+
+
+
+
+def run_retrieve(
+    query,
+    top_k=5,
+    role="analyst"
+):
+
 
     from rag.retriever_hybrid import hybrid_search
 
-    return hybrid_search(query)[:top_k]
+
+    return hybrid_search(
+
+        query=query,
+
+        top_k=top_k,
+
+        role=role
+
+    )

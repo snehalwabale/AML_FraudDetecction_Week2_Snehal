@@ -2,22 +2,50 @@ from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
 
+
 from rag.query_transform import rewrite_query
-from rag.reranker import rerank_documents
+
+from rag.retriever_hybrid import hybrid_search
+
 
 load_dotenv()
 
+
+
 llm = ChatOpenAI(
+
     model="gpt-4o-mini",
+
     temperature=0.2
+
 )
 
 
-def generate_answer(question: str,session_id: str):
 
-    rewritten_query = rewrite_query(question)
+def generate_answer(
 
-    documents = rerank_documents(rewritten_query)
+    question: str,
+
+    role: str = "analyst"
+
+):
+
+
+    rewritten_query = rewrite_query(
+
+        question
+
+    )
+
+
+    documents = hybrid_search(
+
+        rewritten_query,
+
+        role=role
+
+    )
+
 
     context = "\n\n".join(
 
@@ -27,65 +55,82 @@ def generate_answer(question: str,session_id: str):
 
     )
 
-    prompt = f"""
+
+
+    prompt=f"""
+
 You are an AML & Fraud Detection Investigation Copilot.
 
-Answer the investigator's question using the retrieved context.
 
-If the answer is not present in the context,
-say that the information is unavailable.
+User Role:
 
-Retrieved Context
+{role}
+
+
+
+Use only authorized retrieved documents.
+
+
+Context:
 
 {context}
 
-Question
+
+
+Question:
 
 {question}
 
+
+
 Provide:
+
 1. Investigation Summary
+
 2. Risk Assessment
+
 3. Recommended Action
+
+
 """
 
-    response = llm.invoke(prompt)
 
-    citations = []
 
-    retrieval_trace = []
+    response = llm.invoke(
+
+        prompt
+
+    )
+
+
+
+    citations=[]
+
+    retrieval_trace=[]
+
+
 
     for doc in documents:
 
-        citations.append(
 
-            {
+        citations.append({
 
-                "doc_id": doc.metadata.get(
+            "doc_id":
+            doc.metadata.get(
+                "doc_id",
+                "Unknown"
+            )
 
-                    "doc_id",
+        })
 
-                    "Unknown"
-
-                ),
-
-                "score": doc.metadata.get(
-
-                    "score",
-
-                    0
-
-                )
-
-            }
-
-        )
 
         retrieval_trace.append(
 
             doc.metadata
 
         )
+
+
 
     return (
 

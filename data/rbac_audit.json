@@ -1,0 +1,15 @@
+[
+    {
+        "timestamp": "2026-07-22T04:20:40.014964",
+        "role": "analyst",
+        "query": "Hello, I am seeking assistance with an Anti-Money Laundering investigation.",
+        "documents_accessed": 5,
+        "document_ids": [
+            "Unknown",
+            "Unknown",
+            "Unknown",
+            "Unknown",
+            "Unknown"
+        ]
+    }
+]

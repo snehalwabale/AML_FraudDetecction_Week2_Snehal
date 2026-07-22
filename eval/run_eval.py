@@ -1,107 +1,80 @@
-import time
+import json
+from pathlib import Path
+from datetime import datetime
 
-from rag.qa_chain import generate_answer
-
-
-TEST_SET = [
-
-    {
-        "question": "Explain Structuring",
-        "expected": "Structuring"
-    },
-
-    {
-        "question": "What is Smurfing?",
-        "expected": "Smurfing"
-    },
-
-    {
-        "question": "What is AML?",
-        "expected": "Anti Money Laundering"
-    },
-
-    {
-        "question": "What is a Suspicious Activity Report?",
-        "expected": "SAR"
-    },
-
-    {
-        "question": "Explain PEP",
-        "expected": "Politically Exposed Person"
-    }
-
-]
+from eval.regression_suite import run_regression_suite
 
 
-def evaluate():
+REPORT_DIR = Path("reports")
 
-    results = []
+REPORT_DIR.mkdir(
+    exist_ok=True
+)
 
-    total = len(TEST_SET)
 
-    passed = 0
+def save_json(results):
 
-    total_time = 0
-
-    for sample in TEST_SET:
-
-        start = time.time()
-
-        answer, citations, trace = generate_answer(
-
-            sample["question"]
-
-        )
-
-        latency = round(
-
-            time.time() - start,
-
-            3
-
-        )
-
-        total_time += latency
-
-        success = sample["expected"].lower() in answer.lower()
-
-        if success:
-
-            passed += 1
-
-        results.append(
-
-            {
-
-                "question": sample["question"],
-
-                "expected": sample["expected"],
-
-                "answer": answer,
-
-                "success": success,
-
-                "latency": latency,
-
-                "citations": len(citations)
-
-            }
-
-        )
-
-    accuracy = round(
-
-        (passed / total) * 100,
-
-        2
-
+    timestamp = datetime.now().strftime(
+        "%Y%m%d_%H%M%S"
     )
 
-    avg_latency = round(
+    file = REPORT_DIR / f"eval_{timestamp}.json"
 
-        total_time / total,
+    with open(
 
-        3
+        file,
+
+        "w",
+
+        encoding="utf-8"
+
+    ) as f:
+
+        json.dump(
+
+            results,
+
+            f,
+
+            indent=4
+
+        )
+
+    return str(file)
+
+
+def print_summary(summary):
+
+    print()
+
+    print("=" * 60)
+
+    print(" AML & Fraud Detection Evaluation ")
+
+    print("=" * 60)
+
+    print()
+
+    print(f"Total Questions : {summary['total']}")
+
+    print(f"Passed          : {summary['passed']}")
+
+    print(f"Pass Rate       : {summary['pass_rate'] * 100:.2f}%")
+
+    print()
+
+    print("=" * 60)
+
+
+def run_all():
+
+    results = run_regression_suite()
+
+    report = save_json(results)
+
+    print_summary(
+
+        results["summary"]
 
     )
 
@@ -109,32 +82,13 @@ def evaluate():
 
         "status": "completed",
 
-        "accuracy": accuracy,
+        "report": report,
 
-        "average_latency": avg_latency,
-
-        "total_questions": total,
-
-        "passed": passed,
-
-        "failed": total - passed,
-
-        "results": results
+        "summary": results["summary"]
 
     }
 
 
-def run_all():
-
-    return evaluate()
-
-
 if __name__ == "__main__":
 
-    from pprint import pprint
-
-    pprint(
-
-        evaluate()
-
-    )
+    run_all()

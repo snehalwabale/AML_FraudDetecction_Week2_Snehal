@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ChatRequest(BaseModel):
@@ -10,19 +10,37 @@ class ChatRequest(BaseModel):
     session_id: Optional[str] = None
 
 
+
 class AMLResponse(BaseModel):
 
     response: str
 
     risk_score: float = 0
 
+    risk_level: str = "LOW"
+
     action: str = ""
 
     tool_used: str = ""
 
-    citations: List[Dict[str, Any]] = []
+    intent: str = ""
 
-    retrieval_trace: List[Dict[str, Any]] = []
+    recommendation: str = ""
+
+    decision: str = ""
+
+    evidence: List[Dict[str, Any]] = Field(
+        default_factory=list
+    )
+
+    citations: List[Dict[str, Any]] = Field(
+        default_factory=list
+    )
+
+    retrieval_trace: List[Dict[str, Any]] = Field(
+        default_factory=list
+    )
+
 
 
 class HealthResponse(BaseModel):
@@ -36,6 +54,7 @@ class HealthResponse(BaseModel):
     version: str
 
 
+
 class SourceResponse(BaseModel):
 
     doc_id: str
@@ -43,11 +62,13 @@ class SourceResponse(BaseModel):
     chunks: int
 
 
+
 class IngestResponse(BaseModel):
 
     job_id: str
 
     status: str
+
 
 
 class EvaluationResponse(BaseModel):

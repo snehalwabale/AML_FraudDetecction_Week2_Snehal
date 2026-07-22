@@ -1,0 +1,18 @@
+servers:
+
+  - name: sanctions_server
+    description: Sanctions and OFAC screening API
+    endpoint: http://localhost:9001/screen
+    auth_required: true
+
+
+  - name: pep_server
+    description: Politically Exposed Person screening API
+    endpoint: http://localhost:9002/check
+    auth_required: true
+
+
+  - name: fiu_reporting_server
+    description: FIU SAR STR Reporting Gateway
+    endpoint: http://localhost:9003/report
+    auth_required: true

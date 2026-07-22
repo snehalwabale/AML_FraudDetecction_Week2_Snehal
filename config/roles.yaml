@@ -1,0 +1,48 @@
+roles:
+
+  analyst:
+    description: AML Analyst
+    permissions:
+      - typology
+      - public_guidance
+      - transaction_patterns
+    denied:
+      - sar_documents
+      - investigation_files
+      - audit_reports
+
+
+  investigator:
+    description: AML Investigator
+    permissions:
+      - typology
+      - public_guidance
+      - transaction_patterns
+      - investigation_files
+      - case_documents
+    denied:
+      - sar_documents
+
+
+  compliance_officer:
+    description: Compliance Officer
+    permissions:
+      - typology
+      - public_guidance
+      - transaction_patterns
+      - investigation_files
+      - case_documents
+      - regulatory_documents
+
+
+  mlro:
+    description: Money Laundering Reporting Officer
+    permissions:
+      - typology
+      - public_guidance
+      - transaction_patterns
+      - investigation_files
+      - case_documents
+      - sar_documents
+      - audit_reports
+      - regulatory_documents
